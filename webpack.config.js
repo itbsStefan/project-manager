@@ -5,10 +5,11 @@ const pathModule = require( "path" );
 const minifyModule = require( "babel-minify-webpack-plugin" );
 const ExtractTextPlugin = require( "extract-text-webpack-plugin" );
 const browserSyncPlugin = require( "browser-sync-webpack-plugin" );
+const compressionPlugin = require( "compression-webpack-plugin" );
 
 require( "dotenv" ).config( { path: "variables.env" } );
 
-const prod = process.env.NODE_ENV === "prod" ? true : false;
+const prod = process.env.NODE_ENV === "prod";
 
 /* loaders */
 const scss = {
@@ -18,18 +19,12 @@ const scss = {
 
 const babel = {
   test: /\.js$/,
-  use : [ {
+  use : {
     loader : "babel-loader",
     options: {
       presets: [ "babel-preset-env" ],
-      plugins: [ [ "babel-plugin-transform-runtime", {
-        helpers    : false,
-        polyfill   : true,
-        regenerator: true,
-        moduleName : "babel-runtime",
-      } ] ],
     },
-  } ],
+  },
 };
 
 /* plugins */
@@ -59,7 +54,7 @@ const env = new webpack.DefinePlugin( { // Makes .env vars available in client s
 const config = { // common config
   module: {
     loaders: prod ?
-      [ /* babel, */ scss ] :
+      [ babel, scss ] :
       [ scss ],
   },
 };
